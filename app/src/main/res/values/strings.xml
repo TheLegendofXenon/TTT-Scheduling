@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">TT&amp;T Scheduling</string>
+    <string name="login_btn">Login</string>
+    <string name="sign_up_admin_name">Admin Name</string>
+    <string name="enter_email_address">Email Address</string>
+    <string name="enter_admin_email_address">Email (@admin.com)</string>
+    <string name="enter_phone_number">Phone Number</string>
+    <string name="sign_up_btn">Sign Up</string>
+    <string name="go_back_to_login">Go back to Login</string>
+    <string name="sign_up_patient_name">Patient Name</string>
+    <string name="enter_password">Password</string>
+    <string name="enter_date_of_birth">Date of Birth</string>
+    <string name="enter_last_4_digits_ssn">The Last 4 Digits of SSN</string>
+    <string name="title_admin_sign_up">ADMIN SIGN UP</string>
+    <string name="title_patient_sign_up">PATIENT SIGN UP</string>
+    <string name="title_patient_list">PATIENT LIST</string>
+    <string name="welcome">WELCOME</string>
+    <string name="set_up_appointment_btn">Set Up Appointment</string>
+    <string name="locate_btn">Locate</string>
+    <string name="confirm_btn">CONFIRM</string>
+    <string name="title_confirmation">CONFIRMATION</string>
+    <string name="loginText">Please enter your email and password to login</string>
+    <string name="sign_up_as_a_patient">Sign up as Patient</string>
+    <string name="sign_up_as_an_admin">Sign up as Admin</string>
+    <string name="title_login">LOGIN</string>
+    <string name="logout_btn">Logout</string>
+    <string name="admin_calendar_btn">ADMIN CALENDAR</string>
+    <string name="patient_list_btn">Patient List</string>
+    <string name="back_btn">Back</string>
+    <string name="title_appointment">APPOINTMENT</string>
+    <string name="admin_calendar">ADMIN CALENDAR</string>
+    <string name="next_btn">next</string>
+    <string name="title_activity_locate">Map</string>
+</resources>

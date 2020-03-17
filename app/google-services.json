@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "267405642295",
+    "firebase_url": "https://tttscheduling-fdf37.firebaseio.com",
+    "project_id": "tttscheduling-fdf37",
+    "storage_bucket": "tttscheduling-fdf37.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:267405642295:android:fe969eecd2c56b96030db2",
+        "android_client_info": {
+          "package_name": "com.example.tttscheduling"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "267405642295-vshhog9p9167nvpmaa4bn887fpifcua5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tttscheduling",
+            "certificate_hash": "793a7503a034bc7599c81ff06c3b7de358679d5e"
+          }
+        },
+        {
+          "client_id": "267405642295-pv5r3450mh2q4mscuta2ivsfsi22bbvl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEB0oU63kO1r2m4Jm7VP6bORTBY1n4Q8o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "267405642295-pv5r3450mh2q4mscuta2ivsfsi22bbvl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

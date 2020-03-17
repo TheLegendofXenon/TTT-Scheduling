@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AdminHome">
+
+    <ImageView
+        android:id="@+id/hospitalImage"
+        android:layout_width="407dp"
+        android:layout_height="235dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/home_imagev1" />
+
+    <TextView
+        android:id="@+id/adminWelcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/welcome"
+        android:textSize="36sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hospitalImage" />
+
+    <Button
+        android:id="@+id/adminCalendarBtn"
+        android:layout_width="150dp"
+        android:layout_height="65dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/admin_calendar_btn"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/logoutAdmin"
+        app:layout_constraintEnd_toStartOf="@+id/patientListBtn"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/patientListBtn"
+        android:layout_width="150dp"
+        android:layout_height="65dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/patient_list_btn"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/logoutAdmin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/adminCalendarBtn" />
+
+    <TextView
+        android:id="@+id/placeholderText"
+        android:layout_width="349dp"
+        android:layout_height="174dp"
+        android:layout_marginTop="9dp"
+        android:text="According to all known laws of aviation, there is no way a bee should be able to fly. Its wings are too small to get its fat little body off the ground. The bee, of course, flies anyway because bees don't care what humans think is impossible. Yellow, black. Yellow, black. Yellow, black. Yellow, black. Ooh, black and yellow! Let's shake it up a little. Barry! Breakfast is ready! Ooming! Hang on a second. Hello? - Barry? - Adam? - Oan you believe this is happening? - I can't. I'll pick you up. Looking sharp. Use the stairs. Your father paid good money for those."
+        app:layout_constraintBottom_toTopOf="@+id/adminCalendarBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/adminWelcome" />
+
+    <TextView
+        android:id="@+id/logoutAdmin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="@string/logout_btn"
+        android:textColor="#2196F3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
