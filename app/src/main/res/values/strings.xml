@@ -31,4 +31,10 @@
     <string name="admin_calendar">ADMIN CALENDAR</string>
     <string name="next_btn">next</string>
     <string name="title_activity_locate">Map</string>
+    <string name="patient_home_desc">Welcome to the patient home menu. You can click the \'LOCATE\' button on the bottom-left to locate the nearest hospital.
+        Moreover, you can click the \'SET UP APPOINTMENT\' button on the bottom-right to set up an appointment directly. If you choose to logout, you can
+        also click the \'Logout\' blue-text below the two buttons.</string>
+    <string name="admin_home_desc">Welcome to the admin home menu. You can click the \'ADMIN CALENDAR\' button on the bottom-left to see your appointments
+        for any given day. Moreover, you can click the \'PATIENT LIST\' button on the bottom-right to see your list of patients and their appointments.
+        If you choose to logout, you can also click the \'Logout\' blue-text below the two buttons.</string>
 </resources>

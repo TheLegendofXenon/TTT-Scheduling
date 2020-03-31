@@ -5,23 +5,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SignupPatient">
+    tools:context=".SignupPatient"
+    android:background="@drawable/gradient_background">
 
     <Button
         android:id="@+id/signUpPatientBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/sign_up_btn"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signUpPatientSSN" />
+        app:layout_constraintTop_toBottomOf="@+id/signUpPatientSSN"
+        android:background="@drawable/necessary_button_border" />
 
     <TextView
         android:id="@+id/signUpPatientLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="@string/go_back_to_login"
         android:textColor="#2196F3"
         app:layout_constraintEnd_toEndOf="parent"
@@ -32,10 +35,10 @@
         android:id="@+id/signUpPatientName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="32dp"
         android:ems="10"
-        android:inputType="textPersonName"
         android:hint="@string/sign_up_patient_name"
+        android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signUpPatientTitle" />
@@ -58,10 +61,10 @@
         android:id="@+id/signUpPatientPassword"
         android:layout_width="224dp"
         android:layout_height="40dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:ems="10"
-        android:inputType="textPassword"
         android:hint="@string/enter_password"
+        android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
@@ -110,10 +113,21 @@
         android:layout_marginTop="24dp"
         android:layout_marginBottom="32dp"
         android:text="@string/title_patient_sign_up"
+        android:textColor="#000000"
         android:textSize="36sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/signUpPatientName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/signUpPatientSSN"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/HashPass"
+        app:layout_constraintBottom_toTopOf="@+id/signUpPatientBtn"
+        android:visibility="invisible"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,18 +1,16 @@
 package com.example.tttscheduling;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -20,26 +18,20 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.core.Tag;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SignupAdmin extends AppCompatActivity {
     EditText aName, aEmail, aPassword, aPhoneNumber;
     Button aSignUpBtn;
-    TextView loginBtn;
-    DatabaseReference fbRef; // Database Reference object
+    TextView loginBtn, result;
     FirebaseAuth fAuth; // Firebase Authentication object
     FirebaseFirestore fStore; // Firebase Firestore object
-    //AdminFirebase admin; // AdminFirebase object
     String adminID;
     private static final String TAG = "SignupAdmin";
 
@@ -49,6 +41,7 @@ public class SignupAdmin extends AppCompatActivity {
         setContentView(R.layout.activity_signup_admin);
 
         // Assign objects to layout ids
+        result = findViewById(R.id.HashPassAdmin);
         aName = findViewById(R.id.signUpAdminName);
         aEmail = findViewById(R.id.signUpAdminEmail);
         aPassword = findViewById(R.id.signUpAdminPassword);
@@ -59,26 +52,6 @@ public class SignupAdmin extends AppCompatActivity {
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
 
-        /*if(fAuth.getCurrentUser() != null) {
-            startActivity(new Intent(getApplicationContext(), AdminHome.class));
-            finish();
-        }*/
-
-        /*fbRef = FirebaseDatabase.getInstance().getReference().child("Admin");
-        admin = new AdminFirebase();
-        fbRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists())
-                    adminID = (dataSnapshot.getChildrenCount());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        }); */
-
         aSignUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,15 +59,7 @@ public class SignupAdmin extends AppCompatActivity {
                 final String email = aEmail.getText().toString().trim();
                 final String password = aPassword.getText().toString().trim();
                 final String phoneNumber = aPhoneNumber.getText().toString().trim();
-
-                /*
-                admin.setName(name);
-                admin.setEmail(email);
-                admin.setPassword(password);
-                admin.setPhoneNumber(phoneNumber);
-
-                fbRef.child("Admin " + String.valueOf(adminID + 1) + ": " + admin.getName()).setValue(admin);
-                Toast.makeText(SignupAdmin.this, "New Admin Created!", Toast.LENGTH_LONG).show(); */
+                final String aHashPass = result.getText().toString().trim();
 
                 if(TextUtils.isEmpty(email)) {
                     aEmail.setError("Email is Required...");
@@ -126,14 +91,13 @@ public class SignupAdmin extends AppCompatActivity {
                             adminID = fAuth.getCurrentUser().getUid();
                             DocumentReference dReference = fStore.collection("Admin").document(email);
                             Map<String, Object> admin = new HashMap<>();
-                            admin.put("Full Name", name);
+                            admin.put("Name", name);
                             admin.put("Email", email);
-                            admin.put("Password", password);
+                            admin.put("Password", aHashPass);
                             admin.put("Phone", phoneNumber);
                             dReference.set(admin).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    //Log.d(TAG, "Admin Created!");
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
@@ -155,10 +119,30 @@ public class SignupAdmin extends AppCompatActivity {
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(SignupAdmin.this, "Login Instead.", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(getApplicationContext(), Login.class));
                 finish();
             }
         });
+    }
+
+    public void computeMD5Hash(String password) {
+        try {
+            //Create MD5 Hash
+            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+            digest.update(password.getBytes());
+            byte messageDigest[] = digest.digest();
+
+            StringBuffer MD5Hash = new StringBuffer();
+            for (int i = 0; i < messageDigest.length; i++) {
+                String h = Integer.toHexString(0xFF & messageDigest[i]);
+                while (h.length() < 2)
+                    h = "0" + h;
+                MD5Hash.append(h);
+            }
+            result.setText(MD5Hash);
+        }
+        catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
     }
 }

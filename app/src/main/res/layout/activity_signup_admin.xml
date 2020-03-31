@@ -5,16 +5,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SignupAdmin">
+    tools:context=".SignupAdmin"
+    android:background="@drawable/gradient_background">
 
     <EditText
         android:id="@+id/signUpAdminName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="64dp"
         android:ems="10"
-        android:inputType="textPersonName"
         android:hint="@string/sign_up_admin_name"
+        android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signUpAdminTitle" />
@@ -23,10 +24,10 @@
         android:id="@+id/signUpAdminEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:ems="10"
-        android:inputType="textEmailAddress"
         android:hint="@string/enter_admin_email_address"
+        android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signUpAdminName" />
@@ -64,16 +65,18 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="@string/sign_up_btn"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signUpAdminPhone" />
+        app:layout_constraintTop_toBottomOf="@+id/signUpAdminPhone"
+        android:background="@drawable/necessary_button_border" />
 
     <TextView
         android:id="@+id/signUpAdminLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="@string/go_back_to_login"
         android:textColor="#2196F3"
         app:layout_constraintEnd_toEndOf="parent"
@@ -87,10 +90,23 @@
         android:layout_marginTop="24dp"
         android:layout_marginBottom="64dp"
         android:text="@string/title_admin_sign_up"
+        android:textColor="#000000"
         android:textSize="36sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/signUpAdminName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/signUpAdminPhone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/HashPassAdmin"
+        app:layout_constraintBottom_toTopOf="@+id/signUpAdminBtn"
+        android:text="TextView"
+        app:layout_constraintVertical_bias="0.484"
+        android:visibility="invisible"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

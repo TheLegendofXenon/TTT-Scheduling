@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".AdminCalendar">
+    tools:context=".AdminCalendar"
+    android:background="@drawable/gradient_background">
 
     <TextView
         android:id="@+id/calendarText"
@@ -16,6 +17,7 @@
         android:layout_marginBottom="16dp"
         android:text="@string/admin_calendar"
         android:textAlignment="center"
+        android:textColor="#000000"
         android:textSize="36sp"
         app:layout_constraintBottom_toTopOf="@+id/adminCalendar"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,6 +35,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="Back"
-        />
+        android:background="@drawable/unnecessary_button_border"/>
 
 </LinearLayout>

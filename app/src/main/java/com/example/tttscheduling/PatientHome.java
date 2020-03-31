@@ -32,7 +32,6 @@ public class PatientHome extends AppCompatActivity {
         locateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(PatientHome.this, "Locate Hospital!", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(getApplicationContext(), Locate.class));
             }
         });
@@ -41,7 +40,6 @@ public class PatientHome extends AppCompatActivity {
         setUpAppointBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(PatientHome.this, "Set up an Appointment!", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(getApplicationContext(), Appointment.class));
             }
         });

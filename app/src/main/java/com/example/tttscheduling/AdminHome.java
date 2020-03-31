@@ -1,13 +1,13 @@
 package com.example.tttscheduling;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -32,7 +32,6 @@ public class AdminHome extends AppCompatActivity {
         calendarBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(AdminHome.this, "Admin Calendar!", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(getApplicationContext(), AdminCalendar.class));
             }
         });
@@ -41,7 +40,6 @@ public class AdminHome extends AppCompatActivity {
         patientListBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(AdminHome.this, "Patient List!", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(getApplicationContext(), PatientList.class));
                 finish();
             }

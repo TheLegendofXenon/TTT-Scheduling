@@ -1,17 +1,16 @@
 package com.example.tttscheduling;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -19,14 +18,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,10 +31,9 @@ public class SignupPatient extends AppCompatActivity {
 
     EditText pName, pEmail, pPassword, pPhoneNumber, pDOB, pSSN;
     Button pSignUpBtn;
-    TextView loginBtn;
+    TextView loginBtn, result;
     DatabaseReference fbRef; // Database Reference object
     FirebaseAuth fAuth; // Firebase Authentication object
-    //PatientFirebase patient; // PatientFirebase object
     FirebaseFirestore fStore; // Firebase Firestore object
     String patientID;
     private static final String TAG = "SignupPatient";
@@ -48,6 +44,7 @@ public class SignupPatient extends AppCompatActivity {
         setContentView(R.layout.activity_signup_patient);
 
         // Assign objects to layout ids
+        result = findViewById(R.id.HashPass);
         pName = findViewById(R.id.signUpPatientName);
         pEmail = findViewById(R.id.signUpPatientEmail);
         pPassword = findViewById(R.id.signUpPatientPassword);
@@ -60,27 +57,6 @@ public class SignupPatient extends AppCompatActivity {
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
 
-        /*if(fAuth.getCurrentUser() != null) {
-            startActivity(new Intent(getApplicationContext(), PatientHome.class));
-            finish();
-        }*/
-
-        /*
-        fbRef = FirebaseDatabase.getInstance().getReference().child("Patient");
-        patient = new PatientFirebase();
-        fbRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists())
-                    patientID = (dataSnapshot.getChildrenCount());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        }); */
-
         pSignUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,17 +66,7 @@ public class SignupPatient extends AppCompatActivity {
                 final String phoneNumber = pPhoneNumber.getText().toString().trim();
                 final String DOB = pDOB.getText().toString().trim();
                 final String SSN = pSSN.getText().toString().trim();
-
-                /*
-                patient.setName(name);
-                patient.setEmail(email);
-                patient.setPassword(password);
-                patient.setPhoneNumber(phoneNumber);
-                patient.setDOB(DOB);
-                patient.setSSN(SSN);
-
-                fbRef.child("Patient " + String.valueOf(patientID + 1) + ": " + patient.getName()).setValue(patient);
-                Toast.makeText(SignupPatient.this, "New Patient Created!", Toast.LENGTH_LONG).show(); */
+                final String HashPass = result.getText().toString().trim();
 
                 if(TextUtils.isEmpty(email)) {
                     pEmail.setError("Email is Required...");
@@ -125,16 +91,15 @@ public class SignupPatient extends AppCompatActivity {
                             patientID = fAuth.getCurrentUser().getUid();
                             DocumentReference dRef = fStore.collection("Patients").document(email);
                             Map<String, Object> patient = new HashMap<>();
-                            patient.put("Full Name", name);
+                            patient.put("Name", name);
                             patient.put("Email", email);
-                            patient.put("Password", password);
+                            patient.put("Password", HashPass.toString());
                             patient.put("Phone", phoneNumber);
                             patient.put("DOB", DOB);
                             patient.put("SSN", SSN);
                             dRef.set(patient).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    //Log.d(TAG, "Admin Created!");
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
@@ -156,10 +121,30 @@ public class SignupPatient extends AppCompatActivity {
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(SignupPatient.this, "Login Instead.", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(getApplicationContext(), Login.class));
                 finish();
             }
         });
+    }
+
+    public void computeMD5Hash(String password)  {
+        try {
+            //Create MD5 Hash
+            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
+            digest.update(password.getBytes());
+            byte messageDigest[] = digest.digest();
+
+            StringBuffer MD5Hash = new StringBuffer();
+            for (int i = 0; i < messageDigest.length; i++) {
+                String h = Integer.toHexString(0xFF & messageDigest[i]);
+                while (h.length() < 2)
+                    h = "0" + h;
+                MD5Hash.append(h);
+            }
+            result.setText(MD5Hash);
+        }
+        catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
     }
 }
