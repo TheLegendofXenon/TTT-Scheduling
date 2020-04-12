@@ -28,17 +28,18 @@ import java.util.Map;
 
 public class SignupAdmin extends AppCompatActivity {
     EditText aName, aEmail, aPassword, aPhoneNumber;
-    Button aSignUpBtn;
+    Button aSignUpBtn, aSignUpLocate;
     TextView loginBtn, result;
     FirebaseAuth fAuth; // Firebase Authentication object
     FirebaseFirestore fStore; // Firebase Firestore object
-    String adminID;
     private static final String TAG = "SignupAdmin";
+    private String address;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup_admin);
+        getSupportActionBar().setTitle("Admin Sign Up");
 
         // Assign objects to layout ids
         result = findViewById(R.id.HashPassAdmin);
@@ -52,9 +53,13 @@ public class SignupAdmin extends AppCompatActivity {
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
 
+        Intent locationIntent = getIntent();
+        address = locationIntent.getStringExtra("address");
+
         aSignUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                computeMD5Hash(aPassword.toString());
                 final String name = aName.getText().toString().trim();
                 final String email = aEmail.getText().toString().trim();
                 final String password = aPassword.getText().toString().trim();
@@ -81,28 +86,39 @@ public class SignupAdmin extends AppCompatActivity {
                     return;
                 }
 
+                if(phoneNumber.length() != 10) {
+                    aPhoneNumber.setError("Phone number must be 10...");
+                    return;
+                }
+
+                if(address == null) {
+                    Toast.makeText(SignupAdmin.this, "Please select the hospital you occupy...", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 // Creates an Admin Document and sends it to the Admin Collection.
                 // Go to the Admin Home Menu as well.
                 fAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()) {
-                            Toast.makeText(SignupAdmin.this, "Admin Created!", Toast.LENGTH_SHORT).show();
-                            adminID = fAuth.getCurrentUser().getUid();
-                            DocumentReference dReference = fStore.collection("Admin").document(email);
+                            DocumentReference dRef = fStore.collection("Admin").document(email);
                             Map<String, Object> admin = new HashMap<>();
                             admin.put("Name", name);
                             admin.put("Email", email);
                             admin.put("Password", aHashPass);
                             admin.put("Phone", phoneNumber);
-                            dReference.set(admin).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            admin.put("Address", address);
+                            dRef.set(admin).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
+                                    Toast.makeText(SignupAdmin.this, "Admin Successfully Created!", Toast.LENGTH_SHORT).show();
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-
+                                    Toast.makeText(SignupAdmin.this, "Failed to create admin. Please try again later...",
+                                            Toast.LENGTH_SHORT).show();
                                 }
                             });
                             startActivity(new Intent(getApplicationContext(), AdminHome.class));
@@ -123,6 +139,7 @@ public class SignupAdmin extends AppCompatActivity {
                 finish();
             }
         });
+
     }
 
     public void computeMD5Hash(String password) {

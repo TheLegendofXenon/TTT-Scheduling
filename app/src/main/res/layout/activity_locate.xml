@@ -1,9 +1,51 @@
-<?xml version="1.0" encoding="utf-8"?>
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
+<RelativeLayout
+
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".Locate" />
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent">
+
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context="com.example.tttscheduling.MapsActivity"
+
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/confirm"
+
+        android:layout_below="@+id/B_hopistals" />
+
+    <Button
+        android:id="@+id/B_hopistals"
+        android:layout_width="270dp"
+        android:layout_height="45dp"
+        android:layout_alignParentStart="true"
+        android:onClick="onClick"
+        android:text="Find nearby hospitals      → "
+        android:background="@drawable/necessary_button_border"/>
+
+    <Spinner
+        android:id="@+id/sp_distance"
+        android:layout_width="135dp"
+        android:layout_height="45dp"
+        android:layout_toEndOf="@+id/B_hopistals"
+
+
+        />
+    <Button
+        android:id="@+id/next_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="150dp"
+        android:layout_alignParentBottom="true"
+        android:text="Next"
+        android:background="@drawable/necessary_button_border"
+        />
+
+
+
+</RelativeLayout>

@@ -7,33 +7,24 @@
     tools:context=".PatientList"
     android:background="@drawable/gradient_background">
 
-    <TextView
-        android:id="@+id/patientListTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="@string/title_patient_list"
-        android:textColor="#000000"
-        android:textSize="36sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/patientList"
         android:layout_width="350dp"
-        android:layout_height="400dp"
-        android:layout_marginTop="16dp"
+        android:layout_height="540dp"
+        android:layout_marginTop="20dp"
         android:padding="4dp"
         android:scrollbars="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/patientListBack"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/patientListTitle" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/patientListBack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="40dp"
         android:layout_marginBottom="24dp"
         android:text="@string/back_btn"
         app:layout_constraintBottom_toBottomOf="parent"

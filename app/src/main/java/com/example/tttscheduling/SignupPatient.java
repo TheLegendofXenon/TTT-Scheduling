@@ -1,10 +1,15 @@
 package com.example.tttscheduling;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,24 +29,27 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SignupPatient extends AppCompatActivity {
 
-    EditText pName, pEmail, pPassword, pPhoneNumber, pDOB, pSSN;
+    EditText pName, pEmail, pPassword, pPhoneNumber, pSSN;
+    TextView pDOB;
     Button pSignUpBtn;
     TextView loginBtn, result;
     DatabaseReference fbRef; // Database Reference object
     FirebaseAuth fAuth; // Firebase Authentication object
     FirebaseFirestore fStore; // Firebase Firestore object
-    String patientID;
     private static final String TAG = "SignupPatient";
+    private DatePickerDialog.OnDateSetListener mDateSetListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup_patient);
+        getSupportActionBar().setTitle("Patient Sign Up");
 
         // Assign objects to layout ids
         result = findViewById(R.id.HashPass);
@@ -57,15 +65,46 @@ public class SignupPatient extends AppCompatActivity {
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
 
+        pDOB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar cal = Calendar.getInstance();
+                int year = cal.get(Calendar.YEAR);
+                int month = cal.get(Calendar.MONTH);
+                int day = cal.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog dialog = new DatePickerDialog(
+                        SignupPatient.this,
+                        android.R.style.Theme_Holo_Light_Dialog_MinWidth,
+                        mDateSetListener,
+                        year,month,day);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.show();
+            }
+        });
+
+        mDateSetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                month = month + 1;
+                Log.d(TAG, "onDateSet: mm/dd/yyy: " + month + "/" + day + "/" + year);
+
+                String date = month + "/" + day + "/" + year;
+                pDOB.setText(date);
+            }
+        };
+
         pSignUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                computeMD5Hash(pPassword.toString());
                 final String name = pName.getText().toString().trim();
                 final String email = pEmail.getText().toString().trim();
                 final String password = pPassword.getText().toString().trim();
                 final String phoneNumber = pPhoneNumber.getText().toString().trim();
                 final String DOB = pDOB.getText().toString().trim();
                 final String SSN = pSSN.getText().toString().trim();
+
                 final String HashPass = result.getText().toString().trim();
 
                 if(TextUtils.isEmpty(email)) {
@@ -83,28 +122,43 @@ public class SignupPatient extends AppCompatActivity {
                     return;
                 }
 
+                if(phoneNumber.length() != 10) {
+                    pPhoneNumber.setError("Phone number must be 10...");
+                    return;
+                }
+
+                if(DOB.equals("Date of Birth")) {
+                    Toast.makeText(SignupPatient.this, "Please select a date of birth...", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (SSN.length() != 4) {
+                    pSSN.setError("This isn't 4 digits...");
+                    return;
+                }
+
                 fAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()) {
-                            Toast.makeText(SignupPatient.this, "Patient Created!", Toast.LENGTH_SHORT).show();
-                            patientID = fAuth.getCurrentUser().getUid();
                             DocumentReference dRef = fStore.collection("Patients").document(email);
                             Map<String, Object> patient = new HashMap<>();
                             patient.put("Name", name);
                             patient.put("Email", email);
-                            patient.put("Password", HashPass.toString());
+                            patient.put("Password", HashPass);
                             patient.put("Phone", phoneNumber);
                             patient.put("DOB", DOB);
                             patient.put("SSN", SSN);
                             dRef.set(patient).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
+                                    Toast.makeText(SignupPatient.this, "Patient Successfully Created!", Toast.LENGTH_SHORT).show();
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-
+                                    Toast.makeText(SignupPatient.this, "Failed to create patient. Please try again later...",
+                                            Toast.LENGTH_SHORT).show();
                                 }
                             });
                             startActivity(new Intent(getApplicationContext(), PatientHome.class));
@@ -147,4 +201,6 @@ public class SignupPatient extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+
 }

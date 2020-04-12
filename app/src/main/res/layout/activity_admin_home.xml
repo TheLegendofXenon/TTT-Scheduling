@@ -32,8 +32,8 @@
 
     <Button
         android:id="@+id/adminCalendarBtn"
-        android:layout_width="150dp"
-        android:layout_height="65dp"
+        android:layout_width="125dp"
+        android:layout_height="55dp"
         android:layout_marginBottom="16dp"
         android:text="@string/admin_calendar_btn"
         android:textSize="18sp"
@@ -44,8 +44,8 @@
 
     <Button
         android:id="@+id/patientListBtn"
-        android:layout_width="150dp"
-        android:layout_height="65dp"
+        android:layout_width="105dp"
+        android:layout_height="55dp"
         android:layout_marginBottom="16dp"
         android:text="@string/patient_list_btn"
         android:textSize="18sp"

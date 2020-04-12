@@ -32,32 +32,44 @@
 
     <Button
         android:id="@+id/locateBtn"
-        android:layout_width="150dp"
-        android:layout_height="65dp"
+        android:layout_width="70dp"
+        android:layout_height="55dp"
         android:layout_marginBottom="16dp"
+        android:background="@drawable/necessary_button_border"
         android:text="@string/locate_btn"
-        android:textSize="18sp"
+        android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/logoutPatient"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/setUpAppointmentBtn"
-        android:background="@drawable/necessary_button_border" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/setUpAppointmentBtn"
-        android:layout_width="150dp"
-        android:layout_height="65dp"
+        android:layout_width="130dp"
+        android:layout_height="55dp"
         android:layout_marginBottom="16dp"
+        android:background="@drawable/necessary_button_border"
         android:text="@string/set_up_appointment_btn"
-        android:textSize="18sp"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/logoutPatient"
+        app:layout_constraintEnd_toStartOf="@+id/apptsBtn"
+        app:layout_constraintStart_toEndOf="@+id/locateBtn" />
+
+    <Button
+        android:id="@+id/apptsBtn"
+        android:layout_width="135dp"
+        android:layout_height="55dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/necessary_button_border"
+        android:text="Future Appointments"
+        android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/logoutPatient"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/locateBtn"
-        android:background="@drawable/necessary_button_border"/>
+        app:layout_constraintStart_toEndOf="@id/setUpAppointmentBtn" />
 
     <TextView
         android:id="@+id/placeholderText"
-        android:layout_width="344dp"
-        android:layout_height="171dp"
+        android:layout_width="350dp"
+        android:layout_height="125dp"
         android:layout_marginTop="12dp"
         android:text="@string/patient_home_desc"
         app:layout_constraintEnd_toEndOf="parent"

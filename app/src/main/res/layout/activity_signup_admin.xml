@@ -53,8 +53,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:ems="10"
-        android:inputType="phone"
         android:hint="@string/enter_phone_number"
+        android:inputType="phone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signUpAdminPassword" />
@@ -99,14 +99,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/signUpAdminPhone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:id="@+id/HashPassAdmin"
-        app:layout_constraintBottom_toTopOf="@+id/signUpAdminBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
         android:text="TextView"
-        app:layout_constraintVertical_bias="0.484"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/signUpAdminBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

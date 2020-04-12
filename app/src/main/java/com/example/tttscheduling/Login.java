@@ -29,6 +29,7 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        getSupportActionBar().setTitle("Login");
 
         // Assign objects to layout ids
         tEmail = findViewById(R.id.loginEmail);
@@ -67,13 +68,12 @@ public class Login extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            Toast.makeText(Login.this, email + " logged in!", Toast.LENGTH_SHORT).show();
                             // Checks to make sure the login is an Admin or a Patient
                             if (email.indexOf("@admin.com") > 0) {
-                                Toast.makeText(Login.this, "Admin logged in!", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(getApplicationContext(), AdminHome.class));
                                 finish();
                             } else {
-                                Toast.makeText(Login.this, "Patient logged in!", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(getApplicationContext(), PatientHome.class));
                                 finish();
                             }
@@ -86,11 +86,13 @@ public class Login extends AppCompatActivity {
             }
         });
 
-        // This function redirects to the SignupAdmin activity after pressing the "Sign up as Admin" button.
+        // This function redirects to the Locate activity after pressing the "Sign up as Admin" button.
         adminBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), SignupAdmin.class));
+                Intent locateIntent = new Intent(getApplicationContext(), Locate.class);
+                locateIntent.putExtra("ParentPage", 1);
+                startActivity(locateIntent);
             }
         });
 

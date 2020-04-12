@@ -18,7 +18,7 @@
             android:padding="2dp" />
 
         <TextView
-            android:id="@+id/list_name"
+            android:id="@+id/plist_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -29,14 +29,21 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/list_email"
+            android:id="@+id/plist_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/list_name"
+            android:layout_below="@+id/plist_name"
             android:layout_marginStart="8dp"
             android:layout_toEndOf="@+id/pListPersonIcon"
             android:text=""
             android:textSize="15sp" />
+
+        <ImageView
+            android:id="@+id/pListDeleteIcon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:padding="2dp" />
 
     </RelativeLayout>
 

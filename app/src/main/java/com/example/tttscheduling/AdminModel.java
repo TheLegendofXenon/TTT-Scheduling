@@ -1,17 +1,16 @@
 package com.example.tttscheduling;
 
-public class PatientModel {
-    private String Name = "", Email = "", Password = "", DOB = "", SSN = "", Phone = "";
+public class AdminModel {
+    private String Name = "", Email = "", Password = "", Address = "", Phone = "";
 
-    public PatientModel() {
+    public AdminModel() {
     }
 
-    public PatientModel(String Name, String Email, String Password, String DOB, String SSN, String Phone) {
+    public AdminModel(String Name, String Email, String Password, String Address, String Phone) {
         this.Name = Name;
         this.Email = Email;
         this.Password = Password;
-        this.DOB = DOB;
-        this.SSN = SSN;
+        this.Address = Address;
         this.Phone = Phone;
     }
 
@@ -39,20 +38,12 @@ public class PatientModel {
         this.Password = Password;
     }
 
-    public String getDOB() {
-        return DOB;
+    public String getAddress() {
+        return Address;
     }
 
-    public void setDOB(String DOB) {
-        this.DOB = DOB;
-    }
-
-    public String getSSN() {
-        return SSN;
-    }
-
-    public void setSSN(String SSN) {
-        this.SSN = SSN;
+    public void setAddress(String address) {
+        Address = address;
     }
 
     public String getPhone() {

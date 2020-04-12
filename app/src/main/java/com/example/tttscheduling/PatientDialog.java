@@ -17,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.auth.api.Auth;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -30,13 +29,14 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class AdminCalendar extends AppCompatActivity implements AppointmentAdapter.OnItemClickListener, DeleteApptDialog.DeleteDialogListener, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
-
-    private RecyclerView aList;
-    private Button back;
-    private String date, time, name, email, phone, DOB, address, adminEmail = "", adminAddress = "";
+public class PatientDialog extends AppCompatActivity implements AppointmentAdapter.OnItemClickListener, DeleteApptDialog.DeleteDialogListener, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+    // Declarations and Initializations
+    private Button backBtn;
+    private String name, email, phone, SSN, DOB, date, time, address, adminEmail = "", adminAddress = "";
+    private TextView emailText, phoneText, SSNText, DOBText;
     private int deletePos, editPos, day, month, year, hr, min, dayFinal, monthFinal, yearFinal, hrFinal, minFinal;
 
+    private RecyclerView aList;
     private ArrayList<AppointmentModel> appointmentList;
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
@@ -45,40 +45,57 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
     private FirebaseAuth fAuth = FirebaseAuth.getInstance();
     private CollectionReference apptListRef = fStore.collection("Appointments"),
             adminListRef = fStore.collection("Admin");
-    private DocumentReference editA;// editApptListRef;
+    private DocumentReference editA;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin_calendar);
+        setContentView(R.layout.activity_patient_dialog);
 
-        back = findViewById(R.id.calendarListBack);
-        aList = findViewById(R.id.adminCalendarList);
+        // Initializations
+        backBtn = findViewById(R.id.patientListDialogBack);
+        emailText = findViewById(R.id.pListDialogEmail);
+        phoneText = findViewById(R.id.pListDialogPhone);
+        SSNText = findViewById(R.id.pListDialogSSN);
+        DOBText = findViewById(R.id.pListDialogDOB);
+        aList = findViewById(R.id.pListApptList);
 
-        Intent retrieveDate = getIntent();
-        date = retrieveDate.getStringExtra("Date");
-        getSupportActionBar().setTitle("Appointments on " + date);
+        final Intent retrieve = getIntent();
+        final int checkPP = retrieve.getIntExtra("ParentPage", 0);
+        name = retrieve.getStringExtra("Name");
+        email = retrieve.getStringExtra("Email");
+        phone = retrieve.getStringExtra("Phone");
+        SSN = retrieve.getStringExtra("SSN");
+        DOB = retrieve.getStringExtra("DOB");
+
+        getSupportActionBar().setTitle(name);
+        emailText.setText("Email: " + email);
+        phoneText.setText("Phone Number: " + phone);
+        SSNText.setText("Last 4 Digits of SSN: " + SSN);
+        DOBText.setText("Date of Birth: " + DOB);
 
         // Get the admin's address.
-        adminListRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot queryDocumentSnapshots, FirebaseFirestoreException e) {
-                if (e != null) {
-                    return;
-                }
+        if (checkPP == 0) {
+            adminListRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(QuerySnapshot queryDocumentSnapshots, FirebaseFirestoreException e) {
+                    if (e != null) {
+                        return;
+                    }
 
-                adminEmail = fAuth.getCurrentUser().getEmail();
-                for (QueryDocumentSnapshot adminSnapshot : queryDocumentSnapshots) {
-                    AdminModel admin = adminSnapshot.toObject(AdminModel.class);
+                    adminEmail = fAuth.getCurrentUser().getEmail();
+                    for (QueryDocumentSnapshot adminSnapshot : queryDocumentSnapshots) {
+                        AdminModel admin = adminSnapshot.toObject(AdminModel.class);
 
-                    // Get the right admin's address
-                    if ((admin.getEmail()).equals(adminEmail)) {
-                        adminAddress = admin.getAddress();
-                        break;
+                        // Get the right admin's address
+                        if ((admin.getEmail()).equals(adminEmail)) {
+                            adminAddress = admin.getAddress();
+                            break;
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
 
         // Create an appointment list
         apptListRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
@@ -89,16 +106,19 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
                 }
 
                 appointmentList = new ArrayList<>();
-                for (QueryDocumentSnapshot apptSnapshot : queryDocumentSnapshots) {
-                    AppointmentModel appointment = apptSnapshot.toObject(AppointmentModel.class);
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                    AppointmentModel appointment = documentSnapshot.toObject(AppointmentModel.class);
 
-                    // Get the right appointments for the current date and location.
-                    if (date.equals(appointment.getDate()) && adminAddress.equals(appointment.getAddress())) {
-                        name = appointment.getName();
-                        email = appointment.getEmail();
-                        phone = appointment.getPhone();
+                    // Get the right appointments for the current patient (depends upon which PatientDialog).
+                    if (checkPP == 0 && email.equals(appointment.getEmail()) && adminAddress.equals(appointment.getAddress())) {
+                        date = appointment.getDate();
                         time = appointment.getTime();
-                        DOB = appointment.getDOB();
+                        address = appointment.getAddress();
+                        appointmentList.add(new AppointmentModel(name, email, phone, date, time, DOB, address));
+                    }
+                    else if (checkPP == 1 && email.equals(appointment.getEmail())) {
+                        date = appointment.getDate();
+                        time = appointment.getTime();
                         address = appointment.getAddress();
                         appointmentList.add(new AppointmentModel(name, email, phone, date, time, DOB, address));
                     }
@@ -106,32 +126,39 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
 
                 aList.setHasFixedSize(true);
                 adapter = new AppointmentAdapter(appointmentList);
-                ((AppointmentAdapter) adapter).setOnItemClickListener(AdminCalendar.this);
+                ((AppointmentAdapter) adapter).setOnItemClickListener(PatientDialog.this);
 
                 aList.setAdapter(adapter);
                 aList.setLayoutManager(layoutManager);
             }
         });
 
-        back.setOnClickListener(new View.OnClickListener() {
+        backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                goBack(view);
+            public void onClick(View v) {
+                if (checkPP == 0) // Go to Patient List
+                    goPListBack();
+                else if (checkPP == 1) // Go to Patient Home
+                    goPHomeBack();
             }
         });
     }
 
-    public void goBack(View view) {
-        Intent intent = new Intent(this, AdminHome.class);
-        startActivity(intent);
+    // This method redirects to the PatientList activity after pressing the back button.
+    public void goPListBack() {
+        startActivity(new Intent(getApplicationContext(), PatientList.class));
     }
 
-    // This method does nothing.
+    // This method redirects to the PatientHome activity after pressing the back button.
+    private void goPHomeBack() {
+        startActivity(new Intent(getApplicationContext(), PatientHome.class));
+    }
+
+    // This method does nothing...
     @Override
     public void itemClick(int pos) {
     }
 
-    // This method deletes an appointment
     @Override
     public void deleteClick(int pos) {
         deletePos = pos;
@@ -161,7 +188,7 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
                     DocumentReference deleteA = deleteApptSnapshot.getReference();
                     if (deleteApptDate.equals(daDateCheck) && deleteApptTime.equals(daTimeCheck)) {
                         deleteA.delete();
-                        Toast.makeText(AdminCalendar.this, "Appointment Successfully Deleted!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PatientDialog.this, "Appointment Successfully Deleted!", Toast.LENGTH_SHORT).show();
                         break;
                     }
                 }
@@ -181,7 +208,7 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
         month = c.get(Calendar.MONTH);
         day = c.get(Calendar.DAY_OF_MONTH);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(AdminCalendar.this, AdminCalendar.this, year, month, day);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(PatientDialog.this, PatientDialog.this, year, month, day);
         datePickerDialog.show();
     }
 
@@ -195,7 +222,7 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
         hr = c.get(Calendar.HOUR_OF_DAY);
         min = c.get(Calendar.MINUTE);
 
-        TimePickerDialog timePickerDialog = new TimePickerDialog(AdminCalendar.this, AdminCalendar.this, hr, min, DateFormat.is24HourFormat(this));
+        TimePickerDialog timePickerDialog = new TimePickerDialog(PatientDialog.this, PatientDialog.this, hr, min, DateFormat.is24HourFormat(this));
         timePickerDialog.show();
     }
 
@@ -246,7 +273,7 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
                         //editApptListRef = fStore.collection("Appointments/" + editA.getId());
                         editA.update("Date", tempDate);
                         editA.update("Time", tempTime);
-                        Toast.makeText(AdminCalendar.this, "Appointment Successfully Rescheduled!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PatientDialog.this, "Appointment Successfully Rescheduled!", Toast.LENGTH_SHORT).show();
                         break;
                     }
                 }
@@ -268,5 +295,4 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
             list_address = (TextView) findViewById(R.id.alist_address);
         }
     }
-
 }

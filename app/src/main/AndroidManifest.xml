@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".PatientListDialog"></activity>
+        <activity android:name=".AdminCalendar"></activity>
+        <activity android:name=".PatientDialog" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -29,11 +30,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity
-            android:name=".Locate"
-            android:label="@string/title_activity_locate" />
-        <activity android:name=".AdminCalendar" />
-        <activity android:name=".Appointment" />
         <activity android:name=".Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -47,6 +43,7 @@
         <activity android:name=".Confirm" />
         <activity android:name=".SignupAdmin" />
         <activity android:name=".PatientList" />
+        <activity android:name=".Locate"/>
     </application>
 
 </manifest>

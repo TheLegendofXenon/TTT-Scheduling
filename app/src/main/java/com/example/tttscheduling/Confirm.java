@@ -5,10 +5,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -16,21 +20,26 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Confirm extends AppCompatActivity {
 
-    Button backBtn;
+    Button backBtn, confirmationBtn;
     TextView result_info;
     FirebaseAuth fAuth;
     FirebaseFirestore fStore;
-    String userId;
+    String userId, name, email, DOB, phone, date, time, address;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_confirm);
+        getSupportActionBar().setTitle("Confirm Appointment");
 
         result_info = findViewById(R.id.confirmText);
         backBtn = findViewById(R.id.confirmBack);
+        confirmationBtn = findViewById(R.id.confirmBtn);
 
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
@@ -42,15 +51,23 @@ public class Confirm extends AppCompatActivity {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
 
-                Intent intent = getIntent();
-                String date = intent.getStringExtra("date");
-                String time = intent.getStringExtra("time");
+                Intent confirmRetrieve = getIntent();
+                name = documentSnapshot.getString("Name");
+                email = documentSnapshot.getString("Email");
+                phone = documentSnapshot.getString("Phone");
+                DOB = documentSnapshot.getString("DOB");
+                date = confirmRetrieve.getStringExtra("date");
+                time = confirmRetrieve.getStringExtra("time");
+                address = confirmRetrieve.getStringExtra("address");
 
-                String text = "Name: " + documentSnapshot.getString("Name") + '\n' +
-                        "DOB: " + documentSnapshot.getString("DOB") + '\n' +
-                        "Email: " + documentSnapshot.getString("Email") + '\n' +
-                        "Phone number: " + documentSnapshot.getString("Phone") + '\n';
-                result_info.setText(text + "Date: " + date + '\n' + "Time: " + time);
+                String confirmInfo = "Name: " + name + '\n' +
+                        "DOB: " + DOB + '\n' +
+                        "Email: " + email + '\n' +
+                        "Phone number: " + phone + '\n' +
+                        "Date: " + date + '\n' +
+                        "Time: " + time + '\n' +
+                        "Address: " + address;
+                result_info.setText(confirmInfo);
             }
         });
 
@@ -60,10 +77,49 @@ public class Confirm extends AppCompatActivity {
                 goBack();
             }
         });
+
+        confirmationBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createAppt();
+            }
+        });
     }
 
     // This method redirects to the AdminHome activity after pressing the back button.
     public void goBack() {
-        startActivity(new Intent(getApplicationContext(), Appointment.class));
+        Intent backToPHome = new Intent(this, PatientHome.class);
+        backToPHome.putExtra("address", address);
+        startActivity(backToPHome);
+    }
+
+    // This method creates an Appointment document in Firebase Firestore.
+    public void createAppt() {
+        // Initialize necessities
+        DocumentReference dRef = fStore.collection("Appointments").document();
+        Map<String, Object> appointment = new HashMap<>();
+
+        appointment.put("Name", name);
+        appointment.put("Email", email);
+        appointment.put("Phone", phone);
+        appointment.put("DOB", DOB);
+        appointment.put("Date", date);
+        appointment.put("Time", time);
+        appointment.put("Address", address);
+
+        dRef.set(appointment).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(Confirm.this, "Appointment Successfully Created!", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(Confirm.this, "Failed to create appointment. Please try again later...",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        startActivity(new Intent(getApplicationContext(), PatientHome.class));
     }
 }

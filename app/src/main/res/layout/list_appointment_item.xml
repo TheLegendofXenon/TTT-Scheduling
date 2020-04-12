@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="4dp"
+    app:cardCornerRadius="4dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="4dp">
+
+        <ImageView
+            android:id="@+id/aListClipboardIcon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:padding="2dp" />
+
+        <TextView
+            android:id="@+id/alist_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/aListClipboardIcon"
+            android:text=""
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/alist_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/alist_name"
+            android:layout_marginStart="8dp"
+            android:layout_toEndOf="@+id/aListClipboardIcon"
+            android:text=""
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/alist_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/alist_email"
+            android:layout_marginStart="8dp"
+            android:layout_toEndOf="@+id/aListClipboardIcon"
+            android:text=""
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/alist_DOB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/alist_phone"
+            android:layout_marginStart="8dp"
+            android:layout_toEndOf="@+id/aListClipboardIcon"
+            android:text=""
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/alist_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/alist_DOB"
+            android:layout_marginStart="8dp"
+            android:layout_toEndOf="@+id/aListClipboardIcon"
+            android:text=""
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/alist_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/alist_time"
+            android:layout_marginStart="8dp"
+            android:layout_toEndOf="@+id/aListClipboardIcon"
+            android:text=""
+            android:textSize="15sp" />
+
+        <ImageView
+            android:id="@+id/aListEditIcon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:padding="2dp" />
+
+        <ImageView
+            android:id="@+id/aListDeleteIcon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/aListEditIcon"
+            android:padding="2dp" />
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
