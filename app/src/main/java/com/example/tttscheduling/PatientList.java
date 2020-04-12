@@ -117,7 +117,6 @@ public class PatientList extends AppCompatActivity implements PatientAdapter.OnI
                     PatientModel patient = patientSnapshot.toObject(PatientModel.class);
 
                     if (apptList.contains(patient.getEmail())) {
-                        Toast.makeText(PatientList.this, patient.getEmail(), Toast.LENGTH_SHORT).show();
                         name = patient.getName();
                         email = patient.getEmail();
                         password = patient.getPassword();

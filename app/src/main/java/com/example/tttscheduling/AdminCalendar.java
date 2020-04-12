@@ -17,13 +17,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.auth.api.Auth;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -34,7 +34,7 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
 
     private RecyclerView aList;
     private Button back;
-    private String date, time, name, email, phone, DOB, address, adminEmail = "", adminAddress = "";
+    private String date, time, name, email, phone, DOB, address, adminEmail = "", adminAddress = "", holdDateCheck = "", holdTimeCheck = "";
     private int deletePos, editPos, day, month, year, hr, min, dayFinal, monthFinal, yearFinal, hrFinal, minFinal;
 
     private ArrayList<AppointmentModel> appointmentList;
@@ -43,9 +43,9 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
 
     private FirebaseFirestore fStore = FirebaseFirestore.getInstance();
     private FirebaseAuth fAuth = FirebaseAuth.getInstance();
-    private CollectionReference apptListRef = fStore.collection("Appointments"),
-            adminListRef = fStore.collection("Admin");
-    private DocumentReference editA;// editApptListRef;
+    private CollectionReference adminListRef = fStore.collection("Admin");
+    private Query apptListRef = fStore.collection("Appointments").orderBy("Time", Query.Direction.ASCENDING);
+    private DocumentReference editA, checkA;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,7 +161,7 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
                     DocumentReference deleteA = deleteApptSnapshot.getReference();
                     if (deleteApptDate.equals(daDateCheck) && deleteApptTime.equals(daTimeCheck)) {
                         deleteA.delete();
-                        Toast.makeText(AdminCalendar.this, "Appointment Successfully Deleted!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AdminCalendar.this, "Appointment Successfully Canceled!", Toast.LENGTH_SHORT).show();
                         break;
                     }
                 }
@@ -202,6 +202,7 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         String amOrPM = "";
+        final boolean[] apptCheck = {false};
 
         // Set the correct times to AM or PM instead of 24-hour.
         hrFinal = hourOfDay;
@@ -223,14 +224,19 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
         minFinal = minute;
 
         final String tempDate = monthFinal + "/" + dayFinal + "/" + yearFinal;
-        final String tempTime = hrFinal + ":" + String.format("%02d",minFinal) + " " + amOrPM;
+        final String tempTime = amOrPM + " " + hrFinal + ":" + String.format("%02d",minFinal);
 
         // Find the appointment in Firestore and delete.
         AppointmentModel editAppt = appointmentList.get(editPos);
         final String editApptDate = editAppt.getDate();
         final String editApptTime = editAppt.getTime();
 
-        // Edit the patient's appointment date and time
+        if (!(minFinal % 10 == 0)) {// Checks to make sure that a 10-min mark is chosen.
+            Toast.makeText(AdminCalendar.this, "Please choose a 10-minute mark...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check to make sure the edit appointment doesn't conflict
         apptListRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot queryApptSnapshots, FirebaseFirestoreException e) {
@@ -238,20 +244,39 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
                     return;
                 }
 
-                for (QueryDocumentSnapshot editApptSnapshot : queryApptSnapshots) {
-                    AppointmentModel apptEdit = editApptSnapshot.toObject(AppointmentModel.class);
+                boolean apptCheck = false;
+                for (QueryDocumentSnapshot checkApptSnapshot : queryApptSnapshots) {
+                    AppointmentModel apptEdit = checkApptSnapshot.toObject(AppointmentModel.class);
                     String eaDateCheck = apptEdit.getDate(); String eaTimeCheck = apptEdit.getTime();
+
+                    editA = checkApptSnapshot.getReference();
+
+                    // Makes sure rescheduled appointment doesn't conflict
+                    if (eaDateCheck.equals(tempDate) && eaTimeCheck.equals(tempTime) && !holdDateCheck.isEmpty() && !holdTimeCheck.isEmpty()) {
+                        Toast.makeText(AdminCalendar.this, "The appointment already exists... Try another 10-minute mark.", Toast.LENGTH_SHORT).show();
+                        checkA.update("Date", holdDateCheck);
+                        checkA.update("Time", holdTimeCheck);
+                        break;
+                    }
+                    else if (eaDateCheck.equals(tempDate) && eaTimeCheck.equals(tempTime)) {
+                        Toast.makeText(AdminCalendar.this, "The appointment already exists... Try another 10-minute mark.", Toast.LENGTH_SHORT).show();
+                        break;
+                    }
+
+                    // Reschedules the appointment
                     if (editApptDate.equals(eaDateCheck) && editApptTime.equals(eaTimeCheck)) {
-                        editA = editApptSnapshot.getReference();
-                        //editApptListRef = fStore.collection("Appointments/" + editA.getId());
+                        checkA = editA;
+                        holdDateCheck = eaDateCheck;
+                        holdTimeCheck = eaTimeCheck;
                         editA.update("Date", tempDate);
                         editA.update("Time", tempTime);
                         Toast.makeText(AdminCalendar.this, "Appointment Successfully Rescheduled!", Toast.LENGTH_SHORT).show();
-                        break;
                     }
                 }
             }
         });
+
+        adapter.notifyItemChanged(editPos);
     }
 
     private class AppointmentViewHolder extends RecyclerView.ViewHolder {

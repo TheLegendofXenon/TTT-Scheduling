@@ -23,6 +23,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -32,7 +33,7 @@ import java.util.Calendar;
 public class PatientDialog extends AppCompatActivity implements AppointmentAdapter.OnItemClickListener, DeleteApptDialog.DeleteDialogListener, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     // Declarations and Initializations
     private Button backBtn;
-    private String name, email, phone, SSN, DOB, date, time, address, adminEmail = "", adminAddress = "";
+    private String name, email, phone, SSN, DOB, date, time, address, adminEmail = "", adminAddress = "", holdDateCheck = "", holdTimeCheck = "";
     private TextView emailText, phoneText, SSNText, DOBText;
     private int deletePos, editPos, day, month, year, hr, min, dayFinal, monthFinal, yearFinal, hrFinal, minFinal;
 
@@ -43,9 +44,10 @@ public class PatientDialog extends AppCompatActivity implements AppointmentAdapt
 
     private FirebaseFirestore fStore = FirebaseFirestore.getInstance();
     private FirebaseAuth fAuth = FirebaseAuth.getInstance();
-    private CollectionReference apptListRef = fStore.collection("Appointments"),
-            adminListRef = fStore.collection("Admin");
-    private DocumentReference editA;
+    private CollectionReference adminListRef = fStore.collection("Admin");
+    private Query apptListRef = fStore.collection("Appointments").orderBy("Date", Query.Direction.ASCENDING)
+            .orderBy("Time", Query.Direction.ASCENDING);
+    private DocumentReference editA, checkA;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,7 +190,7 @@ public class PatientDialog extends AppCompatActivity implements AppointmentAdapt
                     DocumentReference deleteA = deleteApptSnapshot.getReference();
                     if (deleteApptDate.equals(daDateCheck) && deleteApptTime.equals(daTimeCheck)) {
                         deleteA.delete();
-                        Toast.makeText(PatientDialog.this, "Appointment Successfully Deleted!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PatientDialog.this, "Appointment Successfully Canceled!", Toast.LENGTH_SHORT).show();
                         break;
                     }
                 }
@@ -250,14 +252,19 @@ public class PatientDialog extends AppCompatActivity implements AppointmentAdapt
         minFinal = minute;
 
         final String tempDate = monthFinal + "/" + dayFinal + "/" + yearFinal;
-        final String tempTime = hrFinal + ":" + String.format("%02d",minFinal) + " " + amOrPM;
+        final String tempTime = amOrPM + " " + hrFinal + ":" + String.format("%02d",minFinal);
 
         // Find the appointment in Firestore and delete.
         AppointmentModel editAppt = appointmentList.get(editPos);
         final String editApptDate = editAppt.getDate();
         final String editApptTime = editAppt.getTime();
 
-        // Edit the patient's appointment date and time
+        if (!(minFinal % 10 == 0)) {// Checks to make sure that a 10-min mark is chosen.
+            Toast.makeText(PatientDialog.this, "Please choose a 10-minute mark...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check to make sure the edit appointment doesn't conflict
         apptListRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot queryApptSnapshots, FirebaseFirestoreException e) {
@@ -265,20 +272,39 @@ public class PatientDialog extends AppCompatActivity implements AppointmentAdapt
                     return;
                 }
 
-                for (QueryDocumentSnapshot editApptSnapshot : queryApptSnapshots) {
-                    AppointmentModel apptEdit = editApptSnapshot.toObject(AppointmentModel.class);
+                boolean apptCheck = false;
+                for (QueryDocumentSnapshot checkApptSnapshot : queryApptSnapshots) {
+                    AppointmentModel apptEdit = checkApptSnapshot.toObject(AppointmentModel.class);
                     String eaDateCheck = apptEdit.getDate(); String eaTimeCheck = apptEdit.getTime();
+
+                    editA = checkApptSnapshot.getReference();
+
+                    // Makes sure rescheduled appointment doesn't conflict
+                    if (eaDateCheck.equals(tempDate) && eaTimeCheck.equals(tempTime) && !holdDateCheck.isEmpty() && !holdTimeCheck.isEmpty()) {
+                        Toast.makeText(PatientDialog.this, "The appointment already exists... Try another 10-minute mark.", Toast.LENGTH_SHORT).show();
+                        checkA.update("Date", holdDateCheck);
+                        checkA.update("Time", holdTimeCheck);
+                        return;
+                    }
+                    else if (eaDateCheck.equals(tempDate) && eaTimeCheck.equals(tempTime)) {
+                        Toast.makeText(PatientDialog.this, "The appointment already exists... Try another 10-minute mark.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // Reschedules the appointment
                     if (editApptDate.equals(eaDateCheck) && editApptTime.equals(eaTimeCheck)) {
-                        editA = editApptSnapshot.getReference();
-                        //editApptListRef = fStore.collection("Appointments/" + editA.getId());
+                        checkA = editA;
+                        holdDateCheck = eaDateCheck;
+                        holdTimeCheck = eaTimeCheck;
                         editA.update("Date", tempDate);
                         editA.update("Time", tempTime);
                         Toast.makeText(PatientDialog.this, "Appointment Successfully Rescheduled!", Toast.LENGTH_SHORT).show();
-                        break;
                     }
                 }
             }
         });
+
+        adapter.notifyItemChanged(editPos);
     }
 
     private class AppointmentViewHolder extends RecyclerView.ViewHolder {

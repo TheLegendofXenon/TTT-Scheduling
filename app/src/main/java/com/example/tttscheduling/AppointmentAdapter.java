@@ -98,7 +98,10 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
         holder.emailText.setText("Email: " + currAppointment.getEmail());
         holder.phoneText.setText("Phone #: " + currAppointment.getPhone());
         holder.DOBText.setText("DOB: " + currAppointment.getDOB());
-        holder.timeText.setText(currAppointment.getDate() + " - " + currAppointment.getTime());
+        String tempTime = currAppointment.getTime();
+        String trueAMorPM = tempTime.substring(0, 2);
+        String trueTime = tempTime.substring(3);
+        holder.timeText.setText(currAppointment.getDate() + " - " + trueTime + ' ' + trueAMorPM);
         holder.addressText.setText("Address: " + currAppointment.getAddress());
     }
 

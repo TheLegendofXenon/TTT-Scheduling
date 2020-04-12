@@ -60,12 +60,14 @@ public class Confirm extends AppCompatActivity {
                 time = confirmRetrieve.getStringExtra("time");
                 address = confirmRetrieve.getStringExtra("address");
 
+                String tempAMorPM = time.substring(0, 2);
+                String tempTime = time.substring(3);
                 String confirmInfo = "Name: " + name + '\n' +
                         "DOB: " + DOB + '\n' +
                         "Email: " + email + '\n' +
                         "Phone number: " + phone + '\n' +
                         "Date: " + date + '\n' +
-                        "Time: " + time + '\n' +
+                        "Time: " + tempTime + ' ' + tempAMorPM + '\n' +
                         "Address: " + address;
                 result_info.setText(confirmInfo);
             }

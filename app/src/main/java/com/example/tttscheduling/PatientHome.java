@@ -32,7 +32,8 @@ public class PatientHome extends AppCompatActivity implements DatePickerDialog.O
 
     private FirebaseAuth fAuth = FirebaseAuth.getInstance();
     private FirebaseFirestore fStore = FirebaseFirestore.getInstance();
-    private CollectionReference patientListRef = fStore.collection("Patients");
+    private CollectionReference patientListRef = fStore.collection("Patients"),
+            apptListRef = fStore.collection("Appointments");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,6 +148,7 @@ public class PatientHome extends AppCompatActivity implements DatePickerDialog.O
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         String amOrPM = "";
+        final Intent newAppt = new Intent(this, Confirm.class);
 
         // Set the correct times to AM or PM instead of 24-hour.
         hrFinal = hourOfDay;
@@ -167,15 +169,40 @@ public class PatientHome extends AppCompatActivity implements DatePickerDialog.O
 
         minFinal = minute;
 
-        String date = monthFinal + "/" + dayFinal + "/" + yearFinal;
-        String time = hrFinal + ":" + String.format("%02d",minFinal) + " " + amOrPM;
+        final String date = monthFinal + "/" + dayFinal + "/" + yearFinal;
+        final String time =  amOrPM + " " + hrFinal + ":" + String.format("%02d",minFinal);
 
-        Intent newAppt = new Intent(this, Confirm.class);
-        newAppt.putExtra("date", date);
-        newAppt.putExtra("time", time);
-        newAppt.putExtra("address", address);
-        startActivity(newAppt);
+        if (!(minFinal % 10 == 0)) {// Checks to make sure that a 10-min mark is chosen.
+            Toast.makeText(PatientHome.this, "Please choose a 10-minute mark...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        apptListRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot queryDocumentSnapshots, FirebaseFirestoreException e) {
+                if (e != null)
+                    return;
+
+                boolean apptExists = false;
+                for (QueryDocumentSnapshot apptSnapshot : queryDocumentSnapshots) {
+                    AppointmentModel appointment = apptSnapshot.toObject(AppointmentModel.class);
+
+                    // See if there is already an appointment.
+                    if (time.equals(appointment.getTime()) && date.equals(appointment.getDate()) && address.equals(appointment.getAddress())) {
+                        Toast.makeText(PatientHome.this, "The appointment already exists... Try another 10-minute mark.", Toast.LENGTH_SHORT).show();
+                        apptExists = true;
+                    }
+                }
+
+                if (apptExists)
+                    return;
+
+                newAppt.putExtra("date", date);
+                newAppt.putExtra("time", time);
+                newAppt.putExtra("address", address);
+                startActivity(newAppt);
+            }
+        });
+
     }
-
 
 }
