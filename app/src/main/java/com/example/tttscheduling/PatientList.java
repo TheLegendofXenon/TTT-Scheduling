@@ -202,6 +202,14 @@ public class PatientList extends AppCompatActivity implements PatientAdapter.OnI
             }
         });
 
+        // Send a deletion email
+        String emailSubject = "Sorry from TT&T Scheduling...";
+        String emailMessage = "Hello " + deletePatient.getName() + ",\n\n" +
+                "You have been deleted from TT&T Scheduling. All of your future appointments have been cancelled."
+                + "\n\nThank you,\n" + "TT&T Scheduling";
+        JavaMailAPI sendEmail = new JavaMailAPI(PatientList.this, deletePatient.getEmail(), emailSubject, emailMessage);
+        sendEmail.execute();
+
         DocumentReference deleteP = patientListRef.document(deleteEmail);
         deleteP.delete()
             .addOnSuccessListener(new OnSuccessListener<Void>() {

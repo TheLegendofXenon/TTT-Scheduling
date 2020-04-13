@@ -122,6 +122,16 @@ public class Confirm extends AppCompatActivity {
             }
         });
 
+        // Send a confirmation email
+        String tempAMorPM = time.substring(0, 2);
+        String tempTime = time.substring(3);
+        String emailSubject = "Appointment set for " + date + " at " + address;
+        String emailMessage = "Hello " + name + ",\n\n" +
+                "You have an appointment scheduled for " + date + " at " + tempTime + ' ' + tempAMorPM + " at " + address + '.'
+                + "\n\nThank you,\n" + "TT&T Scheduling";
+        JavaMailAPI sendEmail = new JavaMailAPI(Confirm.this, email, emailSubject, emailMessage);
+        sendEmail.execute();
+
         startActivity(new Intent(getApplicationContext(), PatientHome.class));
     }
 }

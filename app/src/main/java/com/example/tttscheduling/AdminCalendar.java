@@ -45,7 +45,6 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
     private FirebaseAuth fAuth = FirebaseAuth.getInstance();
     private CollectionReference adminListRef = fStore.collection("Admin");
     private Query apptListRef = fStore.collection("Appointments").orderBy("Time", Query.Direction.ASCENDING);
-    private DocumentReference editA, checkA;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,12 +125,12 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
         startActivity(intent);
     }
 
-    // This method does nothing.
+    // This method does nothing, but is required for deleteClick and editClick to work.
     @Override
     public void itemClick(int pos) {
     }
 
-    // This method deletes an appointment
+    // This method deletes an appointment.
     @Override
     public void deleteClick(int pos) {
         deletePos = pos;
@@ -143,9 +142,10 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
     @Override
     public void onYesClicked() {
         // Find the appointment in Firestore and delete.
-        AppointmentModel deleteAppt = appointmentList.get(deletePos);
+        final AppointmentModel deleteAppt = appointmentList.get(deletePos);
         final String deleteApptDate = deleteAppt.getDate();
         final String deleteApptTime = deleteAppt.getTime();
+        final String deleteApptAddress = deleteAppt.getAddress();
 
         // Delete the patient's appointment
         apptListRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
@@ -162,6 +162,17 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
                     if (deleteApptDate.equals(daDateCheck) && deleteApptTime.equals(daTimeCheck)) {
                         deleteA.delete();
                         Toast.makeText(AdminCalendar.this, "Appointment Successfully Canceled!", Toast.LENGTH_SHORT).show();
+
+                        // Send a cancellation email
+                        String tempAMorPM = deleteApptTime.substring(0, 2);
+                        String tempTime = deleteApptTime.substring(3);
+                        String emailSubject = "Cancellation of appointment set for " + deleteApptDate + " at " + deleteApptAddress;
+                        String emailMessage = "Hello " + name + ",\n\n" +
+                                "Your appointment scheduled for " + deleteApptDate + " at " + tempTime + ' ' + tempAMorPM + " at "
+                                + deleteApptAddress + " has been cancelled..." + "\n\nThank you,\n" + "TT&T Scheduling";
+                        JavaMailAPI sendEmail = new JavaMailAPI(AdminCalendar.this, deleteAppt.getEmail(), emailSubject, emailMessage);
+                        sendEmail.execute();
+
                         break;
                     }
                 }
@@ -172,6 +183,7 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
         adapter.notifyItemRemoved(deletePos);
     }
 
+    // This method edits an appointment.
     @Override
     public void editClick(int pos) {
         editPos = pos;
@@ -230,50 +242,24 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
         final AppointmentModel editAppt = appointmentList.get(editPos);
         final String editApptDate = editAppt.getDate();
         final String editApptTime = editAppt.getTime();
+        final String editApptAddress = editAppt.getAddress();
 
         if (!(minFinal % 10 == 0)) {// Checks to make sure that a 10-min mark is chosen.
             Toast.makeText(AdminCalendar.this, "Please choose a 10-minute mark...", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Check to make sure the edit appointment doesn't conflict
-        apptListRef.addSnapshotListener(this, new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot queryApptSnapshots, FirebaseFirestoreException e) {
-                if (e != null) {
-                    return;
-                }
+        // Send a reschedule email
+        String tAMorPM = tempTime.substring(0, 2);
+        String tTime = tempTime.substring(3);
+        String emailSubject = "Reschedule of appointment set for " + tempDate + " at " + editApptAddress;
+        String emailMessage = "Hello " + name + ",\n\n" +
+                "Your appointment has been rescheduled to " + tempDate + " at " + tTime + ' ' + tAMorPM + " at "
+                + editApptAddress + '.' + "\n\nThank you,\n" + "TT&T Scheduling";
+        JavaMailAPI sendEmail = new JavaMailAPI(AdminCalendar.this, editAppt.getEmail(), emailSubject, emailMessage);
+        sendEmail.execute();
 
-                boolean apptCheck = false;
-                for (QueryDocumentSnapshot checkApptSnapshot : queryApptSnapshots) {
-                    AppointmentModel apptEdit = checkApptSnapshot.toObject(AppointmentModel.class);
-                    String eaDateCheck = apptEdit.getDate(); String eaTimeCheck = apptEdit.getTime();
-
-                    // Makes sure rescheduled appointment doesn't conflict
-                    if (eaDateCheck.equals(tempDate) && eaTimeCheck.equals(tempTime) && !holdDateCheck.isEmpty() && !holdTimeCheck.isEmpty()) {
-                        Toast.makeText(AdminCalendar.this, "The appointment already exists... Try another 10-minute mark.", Toast.LENGTH_SHORT).show();
-                        editAppt.setDate(holdDateCheck);
-                        editAppt.setTime(holdTimeCheck);
-                        return;
-                    }
-                    else if (eaDateCheck.equals(tempDate) && eaTimeCheck.equals(tempTime)) {
-                        Toast.makeText(AdminCalendar.this, "The appointment already exists... Try another 10-minute mark.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    // Reschedules the appointment
-                    if (editApptDate.equals(eaDateCheck) && editApptTime.equals(eaTimeCheck)) {
-                        holdDateCheck = eaDateCheck;
-                        holdTimeCheck = eaTimeCheck;
-                        editAppt.setDate(tempDate);
-                        editAppt.setTime(tempTime);
-                        Toast.makeText(AdminCalendar.this, "Appointment Successfully Rescheduled!", Toast.LENGTH_SHORT).show();
-                    }
-
-                }
-            }
-        });
-
+        Toast.makeText(AdminCalendar.this, "Appointment Successfully Rescheduled!", Toast.LENGTH_SHORT).show();
         adapter.notifyItemChanged(editPos);
     }
 

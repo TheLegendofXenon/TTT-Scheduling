@@ -50,4 +50,10 @@ dependencies {
     implementation 'android.arch.paging:runtime:2.1.1'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
 
+    // Email dependency files
+    implementation files('libs/activation.jar')
+    implementation files('libs/additionnal.jar')
+    implementation files('libs/mail.jar')
+
+
 }

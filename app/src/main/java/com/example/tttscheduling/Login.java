@@ -79,7 +79,7 @@ public class Login extends AppCompatActivity {
                             }
                         }
                         else { // Display Error Toast
-                            Toast.makeText(Login.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Login.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
