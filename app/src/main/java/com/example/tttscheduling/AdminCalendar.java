@@ -227,7 +227,7 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
         final String tempTime = amOrPM + " " + hrFinal + ":" + String.format("%02d",minFinal);
 
         // Find the appointment in Firestore and delete.
-        AppointmentModel editAppt = appointmentList.get(editPos);
+        final AppointmentModel editAppt = appointmentList.get(editPos);
         final String editApptDate = editAppt.getDate();
         final String editApptTime = editAppt.getTime();
 
@@ -249,29 +249,27 @@ public class AdminCalendar extends AppCompatActivity implements AppointmentAdapt
                     AppointmentModel apptEdit = checkApptSnapshot.toObject(AppointmentModel.class);
                     String eaDateCheck = apptEdit.getDate(); String eaTimeCheck = apptEdit.getTime();
 
-                    editA = checkApptSnapshot.getReference();
-
                     // Makes sure rescheduled appointment doesn't conflict
                     if (eaDateCheck.equals(tempDate) && eaTimeCheck.equals(tempTime) && !holdDateCheck.isEmpty() && !holdTimeCheck.isEmpty()) {
                         Toast.makeText(AdminCalendar.this, "The appointment already exists... Try another 10-minute mark.", Toast.LENGTH_SHORT).show();
-                        checkA.update("Date", holdDateCheck);
-                        checkA.update("Time", holdTimeCheck);
-                        break;
+                        editAppt.setDate(holdDateCheck);
+                        editAppt.setTime(holdTimeCheck);
+                        return;
                     }
                     else if (eaDateCheck.equals(tempDate) && eaTimeCheck.equals(tempTime)) {
                         Toast.makeText(AdminCalendar.this, "The appointment already exists... Try another 10-minute mark.", Toast.LENGTH_SHORT).show();
-                        break;
+                        return;
                     }
 
                     // Reschedules the appointment
                     if (editApptDate.equals(eaDateCheck) && editApptTime.equals(eaTimeCheck)) {
-                        checkA = editA;
                         holdDateCheck = eaDateCheck;
                         holdTimeCheck = eaTimeCheck;
-                        editA.update("Date", tempDate);
-                        editA.update("Time", tempTime);
+                        editAppt.setDate(tempDate);
+                        editAppt.setTime(tempTime);
                         Toast.makeText(AdminCalendar.this, "Appointment Successfully Rescheduled!", Toast.LENGTH_SHORT).show();
                     }
+
                 }
             }
         });

@@ -255,7 +255,7 @@ public class PatientDialog extends AppCompatActivity implements AppointmentAdapt
         final String tempTime = amOrPM + " " + hrFinal + ":" + String.format("%02d",minFinal);
 
         // Find the appointment in Firestore and delete.
-        AppointmentModel editAppt = appointmentList.get(editPos);
+        final AppointmentModel editAppt = appointmentList.get(editPos);
         final String editApptDate = editAppt.getDate();
         final String editApptTime = editAppt.getTime();
 
@@ -277,27 +277,25 @@ public class PatientDialog extends AppCompatActivity implements AppointmentAdapt
                     AppointmentModel apptEdit = checkApptSnapshot.toObject(AppointmentModel.class);
                     String eaDateCheck = apptEdit.getDate(); String eaTimeCheck = apptEdit.getTime();
 
-                    editA = checkApptSnapshot.getReference();
-
                     // Makes sure rescheduled appointment doesn't conflict
-                    if (eaDateCheck.equals(tempDate) && eaTimeCheck.equals(tempTime) && !holdDateCheck.isEmpty() && !holdTimeCheck.isEmpty()) {
+                    if (eaDateCheck.equals(tempDate) && eaTimeCheck.equals(tempTime) && !holdDateCheck.isEmpty() && !holdTimeCheck.isEmpty()
+                            && editAppt.getAddress().equals(apptEdit.getAddress())) {
                         Toast.makeText(PatientDialog.this, "The appointment already exists... Try another 10-minute mark.", Toast.LENGTH_SHORT).show();
-                        checkA.update("Date", holdDateCheck);
-                        checkA.update("Time", holdTimeCheck);
+                        editAppt.setDate(holdDateCheck);
+                        editAppt.setTime(holdTimeCheck);
                         return;
                     }
-                    else if (eaDateCheck.equals(tempDate) && eaTimeCheck.equals(tempTime)) {
+                    else if (eaDateCheck.equals(tempDate) && eaTimeCheck.equals(tempTime) && editAppt.getAddress().equals(apptEdit.getAddress())) {
                         Toast.makeText(PatientDialog.this, "The appointment already exists... Try another 10-minute mark.", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
                     // Reschedules the appointment
-                    if (editApptDate.equals(eaDateCheck) && editApptTime.equals(eaTimeCheck)) {
-                        checkA = editA;
+                    if (editApptDate.equals(eaDateCheck) && editApptTime.equals(eaTimeCheck) && editAppt.getAddress().equals(apptEdit.getAddress())) {
                         holdDateCheck = eaDateCheck;
                         holdTimeCheck = eaTimeCheck;
-                        editA.update("Date", tempDate);
-                        editA.update("Time", tempTime);
+                        editAppt.setDate(tempDate);
+                        editAppt.setTime(tempTime);
                         Toast.makeText(PatientDialog.this, "Appointment Successfully Rescheduled!", Toast.LENGTH_SHORT).show();
                     }
                 }
