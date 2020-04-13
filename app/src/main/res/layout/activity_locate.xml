@@ -15,7 +15,6 @@
         tools:context="com.example.tttscheduling.MapsActivity"
 
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/confirm"
 
         android:layout_below="@+id/B_hopistals" />
 
@@ -33,8 +32,6 @@
         android:layout_width="135dp"
         android:layout_height="45dp"
         android:layout_toEndOf="@+id/B_hopistals"
-
-
         />
     <Button
         android:id="@+id/next_map"
