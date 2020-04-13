@@ -278,20 +278,19 @@ public class PatientDialog extends AppCompatActivity implements AppointmentAdapt
                     String eaDateCheck = apptEdit.getDate(); String eaTimeCheck = apptEdit.getTime();
 
                     // Makes sure rescheduled appointment doesn't conflict
-                    if (eaDateCheck.equals(tempDate) && eaTimeCheck.equals(tempTime) && !holdDateCheck.isEmpty() && !holdTimeCheck.isEmpty()
-                            && editAppt.getAddress().equals(apptEdit.getAddress())) {
+                    if (eaDateCheck.equals(tempDate) && eaTimeCheck.equals(tempTime) && !holdDateCheck.isEmpty() && !holdTimeCheck.isEmpty()) {
                         Toast.makeText(PatientDialog.this, "The appointment already exists... Try another 10-minute mark.", Toast.LENGTH_SHORT).show();
                         editAppt.setDate(holdDateCheck);
                         editAppt.setTime(holdTimeCheck);
                         return;
                     }
-                    else if (eaDateCheck.equals(tempDate) && eaTimeCheck.equals(tempTime) && editAppt.getAddress().equals(apptEdit.getAddress())) {
+                    else if (eaDateCheck.equals(tempDate) && eaTimeCheck.equals(tempTime)) {
                         Toast.makeText(PatientDialog.this, "The appointment already exists... Try another 10-minute mark.", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
                     // Reschedules the appointment
-                    if (editApptDate.equals(eaDateCheck) && editApptTime.equals(eaTimeCheck) && editAppt.getAddress().equals(apptEdit.getAddress())) {
+                    if (editApptDate.equals(eaDateCheck) && editApptTime.equals(eaTimeCheck)) {
                         holdDateCheck = eaDateCheck;
                         holdTimeCheck = eaTimeCheck;
                         editAppt.setDate(tempDate);
